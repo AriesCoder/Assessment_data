@@ -1,12 +1,13 @@
-log_file = open("um-server-01.txt")
+log_file = open("um-server-01.txt")  #open file um-server-01.txt and return as a file object.
 
 
-def sales_reports(log_file):
-    for line in log_file:
-        line = line.rstrip()
-        day = line[0:3]
-        if day == "Tue":
-            print(line)
+def sales_reports(log_file):    # def keyword is to define a function. In this case, it  defines the function sales_reports(parameter).
+
+    for line in log_file:       #for...in loop is used to walk through each line of the file.
+        line = line.rstrip()    #rstrip() method is used to remove any trailing spaces.
+        day = line[0:3]         #this method is to get the first three letters (from index 0 to 2) of a string
+        if day == "Tue":        #if statement to check if "day" equals "Tue".
+            print(line)         #print out the line contains "Tue" to the screen.
 
 
-sales_reports(log_file)
+sales_reports(log_file)         #invoke the function and pass in the "log_file" as its parameter
