@@ -1,6 +1,49 @@
+const Sequelize = require('sequelize')
+require('dotenv').config()
 
+const sequelize = new Sequelize(process.env.CONNECTION_STRING, {
+    dialect: 'postgres',
+    dialectOptions: {
+        ssl: {
+            rejectUnauthorized: false
+        }
+    }
+})
 
 module.exports = {
+    getCountries: (req, res) =>{
+        sequelize.query(`SELECT * FROM countries;`)
+        .then(dbRes => res.status(200).send(dbRes[0]))
+        .catch(err => console.log(err))
+    },
+
+    createCity: (req, res) => {
+        let{name, rating, countryId} = req.body
+        sequelize.query(`INSERT INTO cities(name, rating, country_id)
+        VALUES('${name}', ${rating}, ${countryId});`)
+        .then(dbRes => res.status(200).send(dbRes[0]))
+        .catch(err => console.log(err))
+    },
+
+    getCities: (req, res) => {
+        sequelize.query(`SELECT ct.city_id, ct.name city, ct.rating, c.country_id, c.name country
+        FROM cities ct
+        JOIN countries c
+        ON c.country_id = ct.country_id 
+        ;`)
+        .then(dbRes => res.status(200).send(dbRes[0]))
+        .catch(err => console.log(err))
+    },
+
+    deleteCity: (req,res) =>{
+        let {id} = req.params
+        sequelize.query(`DELETE
+        FROM cities
+        WHERE city_id = ${id}; `)
+        .then(dbRes => res.status(200).send(dbRes[0]))
+        .catch(err => console.log(err))
+    },
+
     seed: (req, res) => {
         sequelize.query(`
             drop table if exists cities;
@@ -11,7 +54,12 @@ module.exports = {
                 name varchar
             );
 
-            *****YOUR CODE HERE*****
+            CREATE TABLE cities(
+                city_id SERIAL PRIMARY KEY,
+                name VARCHAR(100),
+                rating INT,
+                country_id INT REFERENCES countries(country_id)
+            );
 
             insert into countries (name)
             values ('Afghanistan'),
@@ -209,6 +257,9 @@ module.exports = {
             ('Yemen'),
             ('Zambia'),
             ('Zimbabwe');
+
+            INSERT INTO cities(name, rating, country_id)
+            VALUES ('Sai Gon', 4, 192), ('San Diego', 5, 187), ('Salt Lake', 5, 187);
         `).then(() => {
             console.log('DB seeded!')
             res.sendStatus(200)
