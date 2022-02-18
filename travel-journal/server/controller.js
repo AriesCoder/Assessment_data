@@ -29,7 +29,8 @@ module.exports = {
         sequelize.query(`SELECT ct.city_id, ct.name city, ct.rating, c.country_id, c.name country
         FROM cities ct
         JOIN countries c
-        ON c.country_id = ct.country_id 
+        ON c.country_id = ct.country_id
+        ORDER BY ct.rating DESC
         ;`)
         .then(dbRes => res.status(200).send(dbRes[0]))
         .catch(err => console.log(err))
